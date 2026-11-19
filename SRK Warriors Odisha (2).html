@@ -1,0 +1,427 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>SRK Warriors Odisha – One King. One Team. One Passion.</title>
+<meta name="description" content="SRK Warriors Odisha is a fan community across Odisha celebrating Shah Rukh Khan, Kolkata Knight Riders and cricket.">
+<meta name="theme-color" content="#0b0612">
+<meta name="color-scheme" content="dark">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E👑%3C/text%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Oswald:wght@500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdn.tailwindcss.com/3.4.17"></script>
+<script>
+tailwind.config={theme:{extend:{colors:{royal:'#5b21b6',violet:'#7c3aed',gold:'#f5c542',ink:'#0b0612',card:'#150d24'},fontFamily:{head:['Oswald','Impact','sans-serif'],body:['Inter','system-ui','sans-serif']}}}}
+</script>
+<style>
+:root{color-scheme:dark}
+html{scroll-behavior:smooth;scroll-padding-top:76px}
+body{background:#0b0612;color:#efe9fb;font-family:Inter,system-ui,sans-serif;margin:0}
+.gold-text{background:linear-gradient(90deg,#f5c542,#ffe9a3,#f5c542);-webkit-background-clip:text;background-clip:text;color:transparent}
+.glow:hover{box-shadow:0 0 28px rgba(245,197,66,.35)}
+.reveal{animation:rise .7s ease both}
+@keyframes rise{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:none}}
+.beam{position:absolute;top:-10%;width:40%;height:120%;filter:blur(40px);opacity:.5;animation:sway 9s ease-in-out infinite alternate}
+@keyframes sway{from{transform:rotate(-6deg)}to{transform:rotate(6deg)}}
+input,select,textarea{background:#0f0819;border:1px solid #3b2a5c;border-radius:.6rem;padding:.7rem .9rem;width:100%;color:#efe9fb}
+input:focus,select:focus,textarea:focus{outline:2px solid #f5c542;outline-offset:1px}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;scroll-behavior:auto!important}}
+</style>
+</head>
+<body>
+<div id="root"></div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.3.1/umd/react.production.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.3.1/umd/react-dom.production.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.24.7/babel.min.js"></script>
+<script type="text/babel" data-presets="react">
+const {useState,useEffect,useRef,useMemo}=React;
+
+/* =====================================================================
+   EDIT HERE – all site content lives in this one config block.
+   Nothing below is fabricated: empty lists simply show an "empty" state.
+   ===================================================================== */
+const SITE={
+  whatsapp:"",   // e.g. "https://chat.whatsapp.com/XXXX"
+  instagram:"",  // e.g. "https://instagram.com/yourpage"
+  facebook:"",   // e.g. "https://facebook.com/yourpage"
+  email:"rohanraja781@gmail.com", phone:"+917205584570", phoneDisplay:"+91 72055 84570", location:"Odisha, India",
+  formEmail:"rohanraja781@gmail.com"  // join requests are delivered to this inbox
+};
+// Links to Shah Rukh Khan’s public profiles and the independent Team SRK Warriors portal
+const SRK_LINKS={x:"https://x.com/iamsrk",instagram:"https://www.instagram.com/iamsrk/",team:"https://teamsrkwarriors.in/",teamX:"https://twitter.com/TeamSRKWarriors",teamIG:"https://instagram.com/teamsrkwarriors",teamFB:"https://www.facebook.com/TeamSRKWarriors",wiki:"https://en.wikipedia.org/wiki/King_(2026_film)",filmWiki:"https://en.wikipedia.org/wiki/Shah_Rukh_Khan_filmography"};
+// Selected filmography (y = year, t = title, r = role). Add image:"url" to show a licensed poster.
+const FILMS=[
+{y:2023,t:"Dunki",r:"Hardy Singh Dhillon"},{y:2023,t:"Jawan",r:"Vikram Rathore / Azad"},{y:2023,t:"Pathaan",r:"Pathaan"},
+{y:2018,t:"Zero",r:"Bauua Singh"},{y:2013,t:"Chennai Express",r:"Rahul Mishra"},{y:2010,t:"My Name Is Khan",r:"Rizwan Khan"},
+{y:2007,t:"Om Shanti Om",r:"Om Prakash Makhija"},{y:2007,t:"Chak De! India",r:"Kabir Khan"},{y:2004,t:"Swades",r:"Mohan Bhargava"},
+{y:2004,t:"Veer-Zaara",r:"Veer Pratap Singh"},{y:2002,t:"Devdas",r:"Devdas Mukherjee"},{y:2001,t:"Kabhi Khushi Kabhie Gham",r:"Rahul Raichand"},
+{y:1998,t:"Kuch Kuch Hota Hai",r:"Rahul Khanna"},{y:1995,t:"Dilwale Dulhania Le Jayenge",r:"Raj Malhotra"},{y:1993,t:"Baazigar",r:"Ajay Sharma"},
+{y:1993,t:"Darr",r:"Rahul Mehra"},{y:1992,t:"Deewana",r:"Raja Sahai"}];
+// { src:"url", title:"", category:"KKR Celebrations" }  (use only your own or licensed photos)
+const GALLERY=[];
+const GALLERY_CATEGORIES=["Match Celebrations","SRK Birthday","Fan Meetups","Community Gatherings","KKR Celebrations","Special Events"];
+// { title, date:"2026-12-25", location, image:"url", description, link:"registration url" }
+const EVENTS=[];
+// { title, category, date, summary, link }  categories: SRK Updates | KKR Match Updates | Announcements | Celebrations | Achievements
+const NEWS=[
+{title:"KING is set for a 24 December 2026 theatrical release",category:"SRK Updates",date:"2026",summary:"Siddharth Anand’s Hindi action thriller, starring Shah Rukh Khan and Suhana Khan, is scheduled to open on Christmas Eve 2026.",link:SRK_LINKS.wiki},
+{title:"“Tu Mil Jaaye” released on SRK’s 61st birthday",category:"SRK Updates",date:"2 Nov 2026",summary:"The first single from KING, composed by Sachin–Jigar, features vocals by Arijit Singh, Ed Sheeran and Madhubanti Bagchi.",link:SRK_LINKS.wiki},
+{title:"KING title reveal arrived on SRK’s 60th birthday",category:"SRK Updates",date:"2 Nov 2025",summary:"The first-look poster and title theme “They Call Him King” were unveiled on 2 November 2025.",link:SRK_LINKS.wiki}];
+const NEWS_CATEGORIES=["SRK Updates","KKR Match Updates","Announcements","Celebrations","Achievements"];
+// Odisha has 30 districts
+const DISTRICTS=["Angul","Balangir","Balasore","Bargarh","Bhadrak","Boudh","Cuttack","Deogarh","Dhenkanal","Gajapati","Ganjam","Jagatsinghpur","Jajpur","Jharsuguda","Kalahandi","Kandhamal","Kendrapara","Kendujhar","Khordha","Koraput","Malkangiri","Mayurbhanj","Nabarangpur","Nayagarh","Nuapada","Puri","Rayagada","Sambalpur","Subarnapur","Sundargarh"];
+const NAV=[["Home","home"],["About Us","about"],["Gallery","gallery"],["Events","events"],["Filmography","films"],["News & Updates","news"],["Contact Us","contact"]];
+
+/* ---------- small reusable pieces ---------- */
+const Btn=({href,onClick,variant="gold",children,disabled})=>{
+  const c={gold:"bg-gold text-ink",ghost:"border border-gold/60 text-gold hover:bg-gold/10",violet:"bg-violet text-white"}[variant];
+  const cls=`inline-flex items-center justify-center gap-2 rounded-full px-6 py-3 font-semibold transition hover:-translate-y-0.5 glow ${c} ${disabled?"opacity-50 pointer-events-none":""}`;
+  return href?<a href={href} onClick={onClick} className={cls} {...(href.startsWith("http")?{target:"_blank",rel:"noopener noreferrer"}:{})}>{children}</a>:<button onClick={onClick} className={cls}>{children}</button>;
+};
+const Section=({id,title,kicker,children,alt})=>(
+  <section id={id} className={`py-20 px-5 ${alt?"bg-[#0f0819]":""}`}>
+    <div className="max-w-6xl mx-auto">
+      <p className="text-gold font-head tracking-[.3em] text-sm uppercase">{kicker}</p>
+      <h2 className="font-head text-4xl md:text-5xl font-bold uppercase mt-1 mb-10">{title}</h2>
+      {children}
+    </div>
+  </section>
+);
+const Empty=({icon,text})=>(
+  <div className="rounded-2xl border border-dashed border-violet/40 bg-card/60 p-10 text-center">
+    <div className="text-4xl mb-2">{icon}</div><p className="text-white/70 max-w-md mx-auto">{text}</p>
+  </div>
+);
+const Chip=({active,onClick,children})=>(
+  <button onClick={onClick} className={`px-4 py-1.5 rounded-full text-sm border transition ${active?"bg-gold text-ink border-gold":"border-violet/50 text-white/80 hover:border-gold"}`}>{children}</button>
+);
+const Social=({s,className=""})=>(
+  <span className={`flex gap-3 text-sm ${className}`}>
+    {[["Instagram",s.instagram],["Facebook",s.facebook]].map(([n,u])=>u?<a key={n} href={u} target="_blank" rel="noopener noreferrer" className="text-gold hover:underline">{n}</a>:null)}
+  </span>
+);
+const Logo=()=>(
+  <span className="flex items-center gap-2 font-head text-xl tracking-wide">
+    <span className="grid place-items-center w-9 h-9 rounded-full bg-gradient-to-br from-violet to-royal border border-gold text-gold">♛</span>
+    <span>SRK <span className="gold-text">WARRIORS</span> ODISHA</span>
+  </span>
+);
+
+/* ---------- navigation ---------- */
+function Nav(){
+  const [open,setOpen]=useState(false);const [solid,setSolid]=useState(false);
+  useEffect(()=>{const f=()=>setSolid(scrollY>40);f();addEventListener("scroll",f,{passive:true});return()=>removeEventListener("scroll",f)},[]);
+  return <header className={`fixed top-0 inset-x-0 z-50 transition ${solid||open?"bg-ink/95 backdrop-blur border-b border-violet/30":""}`} style={{paddingTop:"env(safe-area-inset-top,0px)"}}>
+    <nav className="max-w-6xl mx-auto px-5 h-16 flex items-center justify-between" aria-label="Main">
+      <a href="#home"><Logo/></a>
+      <ul className="hidden xl:flex gap-6 text-sm">
+        {NAV.map(([n,id])=><li key={id}><a href={"#"+id} className="text-white/80 hover:text-gold transition">{n}</a></li>)}
+      </ul>
+      <button className="xl:hidden text-gold text-2xl" aria-label="Toggle menu" aria-expanded={open} onClick={()=>setOpen(!open)}>{open?"✕":"☰"}</button>
+    </nav>
+    {open&&<ul className="xl:hidden px-5 pb-5 grid gap-1">
+      {NAV.map(([n,id])=><li key={id}><a href={"#"+id} onClick={()=>setOpen(false)} className="block py-3 border-b border-white/10 text-white/90">{n}</a></li>)}
+    </ul>}
+  </header>;
+}
+
+/* ---------- hero with canvas particles ---------- */
+function Particles(){
+  const ref=useRef();
+  useEffect(()=>{
+    const cv=ref.current,cx=cv.getContext("2d");let w,h,raf;
+    const size=()=>{w=cv.width=cv.offsetWidth;h=cv.height=cv.offsetHeight};size();addEventListener("resize",size);
+    const n=innerWidth<640?35:70;
+    const ps=Array.from({length:n},()=>({x:Math.random()*w,y:Math.random()*h,r:Math.random()*2+.5,v:Math.random()*.4+.15,g:Math.random()<.6}));
+    const draw=()=>{cx.clearRect(0,0,w,h);
+      for(const p of ps){p.y-=p.v;if(p.y<-5){p.y=h+5;p.x=Math.random()*w}
+        cx.beginPath();cx.arc(p.x,p.y,p.r,0,7);cx.fillStyle=p.g?"rgba(245,197,66,.7)":"rgba(167,139,250,.6)";cx.fill()}
+      raf=requestAnimationFrame(draw)};draw();
+    return()=>{cancelAnimationFrame(raf);removeEventListener("resize",size)};
+  },[]);
+  return <canvas ref={ref} className="absolute inset-0 w-full h-full" aria-hidden="true"/>;
+}
+function Hero(){
+  return <section id="home" className="relative min-h-screen grid place-items-center overflow-hidden text-center px-5 pt-24 pb-16"
+    style={{background:"radial-gradient(ellipse at 50% 100%,#3b1a78 0%,#1a0b33 45%,#0b0612 80%)"}}>
+    {/* stadium lights */}
+    <div className="beam left-[2%] bg-gradient-to-b from-violet to-transparent"/>
+    <div className="beam right-[2%] bg-gradient-to-b from-gold/70 to-transparent" style={{animationDelay:"-4s"}}/>
+    {/* stadium rim */}
+    <div className="absolute bottom-0 inset-x-0 h-40 opacity-60" style={{background:"repeating-linear-gradient(90deg,#1a0b33 0 14px,#2a1450 14px 16px)",maskImage:"linear-gradient(to top,#000,transparent)",WebkitMaskImage:"linear-gradient(to top,#000,transparent)"}}/>
+    <Particles/>
+    <div className="relative max-w-4xl reveal">
+      <div className="text-gold text-5xl mb-3" style={{textShadow:"0 0 30px #f5c542"}}>♛</div>
+      <h1 className="font-head font-bold uppercase leading-[1.05] text-5xl sm:text-6xl md:text-7xl">
+        Welcome to <span className="gold-text">SRK Warriors</span> Odisha
+      </h1>
+      <p className="mt-5 text-lg md:text-xl text-white/85">United by SRK. Driven by Cricket. Powered by Odisha.</p>
+      <p className="mt-2 font-head tracking-[.35em] text-gold uppercase text-sm">One King. One Team. One Passion.</p>
+      <div className="mt-9 flex flex-wrap gap-4 justify-center">
+        <Btn href="#join">Join Our Warriors</Btn>
+        <Btn href="#about" variant="ghost">Explore Our Community</Btn>
+      </div>
+    </div>
+  </section>;
+}
+
+/* ---------- about + stats ---------- */
+function About(){
+  const pts=[["🏏","Match celebrations","Watch parties and KKR match-day gatherings."],["🎬","Celebrating SRK","Honouring Shah Rukh Khan’s films, journey and inspiration."]];
+  return <Section id="about" kicker="Who we are" title="About Us">
+    <div className="grid md:grid-cols-2 gap-10 items-start">
+      <div className="space-y-4 text-white/80 leading-relaxed">
+        <p>SRK Warriors Odisha is a passionate fan community celebrating Shah Rukh Khan, the Kolkata Knight Riders and the game of cricket — all with the pride of Odisha.</p>
+        <p>We bring fans together across the state, organising fan gatherings and match celebrations that promote friendship, unity and community spirit.</p>
+        <p className="text-xs text-white/50">This is an independent fan community and is not officially affiliated with Shah Rukh Khan, Red Chillies Entertainment or Kolkata Knight Riders.</p>
+      </div>
+      <div className="grid grid-cols-2 gap-4">
+        {pts.map(([i,t,d])=><div key={t} className="rounded-2xl bg-card border border-violet/30 p-5 hover:border-gold transition">
+          <div className="text-2xl">{i}</div><h3 className="font-head text-lg mt-1">{t}</h3><p className="text-sm text-white/60 mt-1">{d}</p></div>)}
+      </div>
+    </div>
+  </Section>;
+}
+
+/* ---------- gallery ---------- */
+function Gallery(){
+  const [cat,setCat]=useState("All");const [open,setOpen]=useState(null);
+  const list=GALLERY.filter(g=>cat==="All"||g.category===cat);
+  useEffect(()=>{const k=e=>{if(e.key==="Escape")setOpen(null);if(open!==null&&e.key==="ArrowRight")setOpen((open+1)%list.length);if(open!==null&&e.key==="ArrowLeft")setOpen((open-1+list.length)%list.length)};addEventListener("keydown",k);return()=>removeEventListener("keydown",k)},[open,list.length]);
+  return <Section id="gallery" kicker="Moments" title="Gallery">
+    <div className="flex flex-wrap gap-2 mb-8">{["All",...GALLERY_CATEGORIES].map(c=><Chip key={c} active={cat===c} onClick={()=>setCat(c)}>{c}</Chip>)}</div>
+    {GALLERY.length===0?<Empty icon="📸" text="Our photo gallery is coming soon. Add your own or properly licensed photos to the GALLERY list to fill this space."/>
+    :list.length===0?<Empty icon="🖼️" text="No photos in this category yet."/>
+    :<div className="columns-2 md:columns-3 gap-4 [&>*]:mb-4">
+      {list.map((g,i)=><button key={i} onClick={()=>setOpen(i)} className="block w-full overflow-hidden rounded-xl border border-violet/30 hover:border-gold transition group">
+        <img src={g.src} alt={g.title||g.category} loading="lazy" className="w-full group-hover:scale-105 transition duration-500"/></button>)}
+    </div>}
+    {open!==null&&list[open]&&<div role="dialog" aria-modal="true" className="fixed inset-0 z-[60] bg-black/95 grid place-items-center p-4" onClick={()=>setOpen(null)}>
+      <button className="absolute top-4 right-5 text-3xl text-gold" aria-label="Close">✕</button>
+      <figure onClick={e=>e.stopPropagation()} className="max-w-5xl"><img src={list[open].src} alt={list[open].title||""} className="max-h-[80vh] mx-auto rounded-lg"/>
+        <figcaption className="text-center text-white/70 mt-3">{list[open].title} <span className="text-gold">· {list[open].category}</span></figcaption></figure>
+    </div>}
+  </Section>;
+}
+
+/* ---------- events ---------- */
+function Events(){
+  const [tab,setTab]=useState("upcoming");
+  const today=new Date().toISOString().slice(0,10);
+  const list=EVENTS.filter(e=>tab==="upcoming"?e.date>=today:e.date<today).sort((a,b)=>a.date.localeCompare(b.date));
+  const fmt=d=>new Date(d+"T00:00:00").toLocaleDateString("en-IN",{day:"numeric",month:"short",year:"numeric"});
+  return <Section id="events" kicker="Be there" title="Events" alt>
+    <div className="flex gap-2 mb-8"><Chip active={tab==="upcoming"} onClick={()=>setTab("upcoming")}>Upcoming</Chip><Chip active={tab==="previous"} onClick={()=>setTab("previous")}>Previous</Chip></div>
+    {list.length===0?<Empty icon="🏟️" text={`No ${tab} events listed right now. Follow our community channels for announcements.`}/>
+    :<div className="grid md:grid-cols-2 gap-6">{list.map((e,i)=><article key={i} className="rounded-2xl bg-card border border-violet/30 overflow-hidden hover:border-gold transition">
+      {e.image&&<img src={e.image} alt={e.title} loading="lazy" className="h-48 w-full object-cover"/>}
+      <div className="p-5"><h3 className="font-head text-2xl">{e.title}</h3>
+        <p className="text-gold text-sm mt-1">📅 {fmt(e.date)} · 📍 {e.location}</p>
+        <p className="text-white/70 mt-3 text-sm">{e.description}</p>
+        {tab==="upcoming"&&<div className="mt-4"><Btn href={e.link||"#join"}>Register</Btn></div>}</div>
+    </article>)}</div>}
+  </Section>;
+}
+
+/* ---------- KING hub tiles ---------- */
+function useCountdown(iso){
+  const calc=()=>Math.max(0,new Date(iso)-Date.now());
+  const [ms,setMs]=useState(calc);
+  useEffect(()=>{const t=setInterval(()=>setMs(calc()),1000);return()=>clearInterval(t)},[]);
+  const S=Math.floor(ms/1000);return {d:Math.floor(S/86400),h:Math.floor(S%86400/3600),m:Math.floor(S%3600/60),s:S%60,done:ms===0};
+}
+const Tile=({title,children,className=""})=>(
+  <div className={`rounded-2xl bg-card border border-violet/30 p-6 hover:border-gold transition ${className}`}>
+    <h3 className="font-head text-xl text-gold uppercase tracking-wide mb-3">{title}</h3>{children}</div>
+);
+function KingHub(){
+  const c=useCountdown("2026-12-24T00:00:00+05:30");
+  return <section id="king" className="py-16 px-5" style={{background:"linear-gradient(180deg,#0b0612,#150d24)"}}>
+    <div className="max-w-6xl mx-auto grid lg:grid-cols-3 gap-5">
+      <div className="lg:col-span-2 rounded-3xl border border-gold/50 p-8 text-center relative overflow-hidden" style={{background:"radial-gradient(circle at 50% 0%,#4c1d95,#150d24 70%)"}}>
+        <p className="font-head tracking-[.3em] text-gold text-sm uppercase">The Kingdom comes together</p>
+        <h2 className="font-head text-7xl md:text-8xl font-bold gold-text mt-1">KING</h2>
+        <p className="text-white/80 mt-1">{c.done?"Now in cinemas":"In cinemas 24 December 2026"}</p>
+        <div className="grid grid-cols-4 gap-3 mt-6 max-w-md mx-auto" aria-live="off">
+          {[["Days",c.d],["Hours",c.h],["Mins",c.m],["Secs",c.s]].map(([l,v])=><div key={l} className="rounded-xl bg-ink/70 border border-violet/40 py-3">
+            <div className="font-head text-3xl md:text-4xl text-gold">{String(v).padStart(2,"0")}</div><div className="text-[10px] uppercase tracking-widest text-white/60">{l}</div></div>)}
+        </div>
+        <p className="text-xs text-white/55 mt-5">Directed by Siddharth Anand · Red Chillies Entertainment &amp; Marflix Pictures · Music by Sachin–Jigar</p>
+        <div className="mt-5"><Btn href={SRK_LINKS.wiki} variant="ghost">Film details on Wikipedia</Btn></div>
+      </div>
+      <div className="grid gap-5">
+        <Tile title="Cast"><p className="text-sm text-white/75">Shah Rukh Khan, Suhana Khan, Abhishek Bachchan, Deepika Padukone, Anil Kapoor, Rani Mukerji, Jaideep Ahlawat, Jackie Shroff, Raghav Juyal and Abhay Verma.</p></Tile>
+        <Tile title="Follow @iamsrk"><div className="flex gap-3 flex-wrap"><Btn href={SRK_LINKS.x} variant="ghost">X</Btn><Btn href={SRK_LINKS.instagram} variant="ghost">Instagram</Btn></div></Tile>
+      </div>
+      <Tile title="Music"><p className="text-sm text-white/75">“Tu Mil Jaaye” — Arijit Singh, Ed Sheeran &amp; Madhubanti Bagchi. Title theme “They Call Him King”.</p></Tile>
+      <Tile title="Team SRK Warriors" className="lg:col-span-2"><p className="text-sm text-white/80">First Ever Group Account for @iamsrk and SRKians. We believe in Staying as a Group. Uniting SRKians from all over the World. Join Us in Spreading Love for @iamsrk.</p>
+        <p className="text-sm text-gold mt-3">Follow #TeamSRKWarriors on Twitter, Instagram &amp; Facebook</p>
+        <div className="flex gap-2 flex-wrap mt-3"><Btn href={SRK_LINKS.teamX} variant="ghost">Twitter</Btn><Btn href={SRK_LINKS.teamIG} variant="ghost">Instagram</Btn><Btn href={SRK_LINKS.teamFB} variant="ghost">Facebook</Btn><Btn href={SRK_LINKS.team} variant="ghost">Visit portal</Btn></div>
+        <p className="text-xs text-white/40 mt-3">Independent fan group — description from their own profile.</p></Tile>
+    </div>
+    <p className="max-w-6xl mx-auto text-xs text-white/40 mt-4">Film facts are sourced from the KING (2026 film) Wikipedia article. Release dates can change — check official channels.</p>
+  </section>;
+}
+
+/* ---------- filmography ---------- */
+const GRADS=["linear-gradient(160deg,#5b21b6,#150d24)","linear-gradient(160deg,#a16207,#1a0b33)","linear-gradient(160deg,#7c3aed,#0b0612)","linear-gradient(160deg,#4c1d95,#b45309)"];
+function Films(){
+  const [dec,setDec]=useState("All");
+  const decs=["All","2020s","2010s","2000s","1990s"];
+  const list=FILMS.filter(f=>dec==="All"||f.y>=+dec.slice(0,4)&&f.y<+dec.slice(0,4)+10);
+  return <Section id="films" kicker="The King on screen" title="Filmography">
+    <div className="flex flex-wrap gap-2 mb-8">{decs.map(d=><Chip key={d} active={dec===d} onClick={()=>setDec(d)}>{d}</Chip>)}</div>
+    <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-5">
+      {dec==="All"&&<article className="relative aspect-[2/3] rounded-2xl overflow-hidden border-2 border-gold p-5 flex flex-col justify-end glow" style={{background:"linear-gradient(160deg,#f5c542,#5b21b6 45%,#0b0612)"}}>
+        <span className="absolute top-3 right-3 text-[10px] font-semibold bg-ink text-gold px-2 py-1 rounded-full">24 DEC 2026</span>
+        <h3 className="font-head text-5xl font-bold">KING</h3><p className="text-sm text-white/85">Upcoming · Action thriller</p></article>}
+      {list.map((f,i)=><article key={f.t} className="relative aspect-[2/3] rounded-2xl overflow-hidden border border-violet/40 hover:border-gold hover:-translate-y-1 transition p-4 flex flex-col justify-end" style={{background:GRADS[i%4]}}>
+        {f.image&&<img src={f.image} alt={f.t+" poster"} loading="lazy" className="absolute inset-0 w-full h-full object-cover"/>}
+        <span className="absolute top-3 left-3 font-head text-gold text-lg">{f.y}</span>
+        <div className="relative"><h3 className="font-head text-2xl leading-tight uppercase">{f.t}</h3><p className="text-xs text-white/75 mt-1">as {f.r}</p></div></article>)}
+    </div>
+    <p className="text-xs text-white/45 mt-5">A selection only — see the <a className="text-gold hover:underline" href={SRK_LINKS.filmWiki} target="_blank" rel="noopener noreferrer">complete filmography on Wikipedia</a>. Poster-style tiles are original designs; official posters belong to their studios.</p>
+  </Section>;
+}
+
+/* ---------- news ---------- */
+function News(){
+  const [cat,setCat]=useState("All");
+  const list=NEWS.filter(n=>cat==="All"||n.category===cat);
+  return <Section id="news" kicker="Latest" title="News & Updates" alt>
+    <div className="flex flex-wrap gap-2 mb-8">{["All",...NEWS_CATEGORIES].map(c=><Chip key={c} active={cat===c} onClick={()=>setCat(c)}>{c}</Chip>)}</div>
+    {list.length===0?<Empty icon="📰" text="No updates posted yet. SRK news, KKR match updates, announcements and community achievements will appear here."/>
+    :<div className="grid md:grid-cols-2 lg:grid-cols-3 gap-5">{list.map((n,i)=><article key={i} className="rounded-2xl bg-card border border-violet/30 p-5 hover:border-gold transition">
+      <span className="text-xs text-gold uppercase tracking-wider">{n.category} · {n.date}</span>
+      <h3 className="font-head text-xl mt-2">{n.title}</h3><p className="text-white/65 text-sm mt-2">{n.summary}</p>
+      {n.link&&<a href={n.link} target="_blank" rel="noopener noreferrer" className="inline-block mt-3 text-gold text-sm hover:underline">Read more →</a>}</article>)}</div>}
+  </Section>;
+}
+
+/* ---------- join form: delivers to SITE.formEmail ---------- */
+function Join(){
+  const init={name:"",district:"",city:"",mobile:"",email:"",dob:"",why:"",consent:false,site:""};
+  const [f,setF]=useState(init);const [touched,setTouched]=useState({});const [status,setStatus]=useState("idle");
+  const today=new Date().toISOString().slice(0,10);
+  const rules={
+    name:v=>v.trim().length<2?"Please enter your full name.":"",
+    district:v=>!v?"Select your district.":"",
+    city:v=>v.trim().length<2?"Please enter your city or town.":"",
+    mobile:v=>!/^[6-9]\d{9}$/.test(v)?"Enter a valid 10-digit Indian mobile number.":"",
+    email:v=>!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(v.trim())?"Enter a valid email address.":"",
+    dob:v=>{if(!v||v>today)return "Enter a valid date of birth.";const a=(Date.now()-new Date(v))/31557600000;return a<13?"You must be at least 13 years old to join.":""},
+    why:v=>v.trim().length<10?"Tell us a little more (at least 10 characters).":"",
+    consent:v=>!v?"Please agree so we can contact you.":""
+  };
+  const errors=Object.fromEntries(Object.keys(rules).map(k=>[k,rules[k](f[k])]).filter(([,m])=>m));
+  const done=Object.keys(rules).filter(k=>!errors[k]).length, total=Object.keys(rules).length;
+  const set=k=>e=>{let v=e.target.type==="checkbox"?e.target.checked:e.target.value;if(k==="mobile")v=v.replace(/\D/g,"").slice(0,10);setF({...f,[k]:v})};
+  const blur=k=>()=>setTouched(t=>({...t,[k]:true}));
+  const summary=()=>`Full name: ${f.name}\nDistrict: ${f.district}\nCity: ${f.city}\nMobile: +91 ${f.mobile}\nEmail: ${f.email}\nDate of birth: ${f.dob}\nWhy join: ${f.why}`;
+  const mailto=()=>"mailto:"+SITE.formEmail+"?subject="+encodeURIComponent("Join request – "+f.name)+"&body="+encodeURIComponent(summary());
+  const submit=async ev=>{
+    ev.preventDefault();
+    if(f.site)return; // honeypot: bots fill this hidden field
+    if(Object.keys(errors).length){setTouched(Object.fromEntries(Object.keys(rules).map(k=>[k,true])));
+      const first=Object.keys(errors)[0];document.getElementById("jf-"+first)?.focus();return;}
+    setStatus("sending");
+    try{
+      const r=await fetch("https://formsubmit.co/ajax/"+SITE.formEmail,{method:"POST",headers:{"Content-Type":"application/json",Accept:"application/json"},
+        body:JSON.stringify({name:f.name,district:f.district,city:f.city,mobile:"+91 "+f.mobile,email:f.email,date_of_birth:f.dob,why_join:f.why,_replyto:f.email,_subject:"New SRK Warriors Odisha join request – "+f.name,_template:"table",_captcha:"false"})});
+      const j=await r.json();
+      if(!r.ok||j.success===false||j.success==="false")throw new Error("send failed");
+      setStatus("sent");
+    }catch(_){setStatus("fallback")}
+  };
+  const Field=({k,label,hint,children})=>{const m=touched[k]&&errors[k];
+    return <div><label htmlFor={"jf-"+k} className="text-sm text-white/80">{label}<span className="text-gold"> *</span></label>
+      <div className="mt-1">{children(!!m)}</div>
+      {m?<p role="alert" className="text-red-400 text-xs mt-1">{errors[k]}</p>:hint&&<p className="text-white/40 text-xs mt-1">{hint}</p>}</div>};
+  const inp=(k,extra={})=>({id:"jf-"+k,value:f[k],onChange:set(k),onBlur:blur(k),"aria-invalid":!!(touched[k]&&errors[k]),style:touched[k]&&errors[k]?{borderColor:"#f87171"}:undefined,...extra});
+  const steps=[["1","Fill the form","Tell us who you are and where you’re from."],["2","We reach out","The team contacts you on your mobile or email."],["3","Join the community","Meet fellow Warriors and take part in fan gatherings."]];
+  return <Section id="join" kicker="Become a Warrior" title="Join Our Warriors">
+    <div className="grid lg:grid-cols-5 gap-8">
+      <aside className="lg:col-span-2 space-y-5">
+        <div className="rounded-3xl border border-gold/40 p-6" style={{background:"linear-gradient(160deg,#4c1d95,#150d24 70%)"}}>
+          <h3 className="font-head text-2xl gold-text">One King. One Team. One Passion.</h3>
+          <p className="text-sm text-white/75 mt-2">Be part of the SRK Warriors Odisha family — SRK fans, KKR supporters and cricket lovers united across the state.</p>
+          <ol className="mt-5 space-y-4">{steps.map(([n,t,d])=><li key={n} className="flex gap-3"><span className="shrink-0 grid place-items-center w-8 h-8 rounded-full bg-gold text-ink font-head">{n}</span><span><b className="block">{t}</b><span className="text-sm text-white/65">{d}</span></span></li>)}</ol>
+        </div>
+        <div className="rounded-2xl bg-card border border-violet/30 p-5 text-sm space-y-2">
+          <p className="font-head text-lg text-gold">Prefer to talk?</p>
+          <p>📞 <a className="hover:text-gold underline" href={"tel:"+SITE.phone}>{SITE.phoneDisplay}</a></p>
+          <p>✉️ <a className="hover:text-gold underline" href={"mailto:"+SITE.formEmail}>{SITE.formEmail}</a></p>
+          {SITE.whatsapp&&<p>💬 <a className="hover:text-gold underline" href={SITE.whatsapp} target="_blank" rel="noopener noreferrer">Join our WhatsApp community</a></p>}
+        </div>
+      </aside>
+      <div className="lg:col-span-3 rounded-3xl bg-card border border-gold/40 p-6 md:p-8">
+        {status==="sent"||status==="fallback"?<div className="text-center py-6" role="status" aria-live="polite">
+          <div className="text-5xl">{status==="sent"?"🎉":"✉️"}</div>
+          <h3 className="font-head text-3xl gold-text mt-2">{status==="sent"?`Welcome, ${f.name.trim().split(" ")[0]}!`:"One last step"}</h3>
+          {status==="sent"?<p className="text-white/75 mt-2">Your request has reached the SRK Warriors Odisha team. We’ll contact you soon.</p>
+          :<><p className="text-white/75 mt-2">We couldn’t send your request automatically from here. Tap the button below — your email app opens with everything filled in; just press <b>Send</b>.</p>
+            <div className="mt-5 flex flex-wrap gap-3 justify-center"><Btn href={mailto()}>Send by email</Btn><Btn href={"tel:"+SITE.phone} variant="ghost">Call {SITE.phoneDisplay}</Btn></div></>}
+          <div className="mt-6"><Btn variant="ghost" onClick={()=>{setF(init);setTouched({});setStatus("idle")}}>Submit another request</Btn></div>
+        </div>
+        :<form onSubmit={submit} noValidate className="grid gap-5">
+          <div><div className="flex justify-between text-xs text-white/50 mb-1"><span>Your details</span><span>{done} of {total} complete</span></div>
+            <div className="h-1.5 rounded-full bg-white/10 overflow-hidden"><div className="h-full bg-gold transition-all" style={{width:(done/total*100)+"%"}}/></div></div>
+          <Field k="name" label="Full name">{()=><input {...inp("name",{autoComplete:"name",placeholder:"Your full name"})}/>}</Field>
+          <div className="grid sm:grid-cols-2 gap-5">
+            <Field k="district" label="District">{()=><select {...inp("district",{autoComplete:"address-level1"})}><option value="">Select district…</option>{DISTRICTS.map(d=><option key={d}>{d}</option>)}</select>}</Field>
+            <Field k="city" label="City / town">{()=><input {...inp("city",{autoComplete:"address-level2",placeholder:"e.g. your town"})}/>}</Field>
+            <Field k="mobile" label="Mobile number" hint="10-digit number without +91">{()=><div className="flex"><span className="grid place-items-center px-3 rounded-l-[.6rem] border border-r-0 border-[#3b2a5c] bg-[#1a0f2b] text-white/70 text-sm">+91</span><input {...inp("mobile",{type:"tel",inputMode:"numeric",autoComplete:"tel-national",maxLength:10,style:{borderTopLeftRadius:0,borderBottomLeftRadius:0,...(touched.mobile&&errors.mobile?{borderColor:"#f87171"}:{})}})}/></div>}</Field>
+            <Field k="email" label="Email address">{()=><input {...inp("email",{type:"email",autoComplete:"email",placeholder:"you@example.com"})}/>}</Field>
+          </div>
+          <Field k="dob" label="Date of birth">{()=><input {...inp("dob",{type:"date",max:today,autoComplete:"bday"})}/>}</Field>
+          <Field k="why" label="Why do you want to join?" hint={f.why.trim().length+" / 500"}>{()=><textarea {...inp("why",{rows:4,maxLength:500,placeholder:"Tell us about your love for SRK, KKR and cricket…"})}/>}</Field>
+          <input type="text" name="site" value={f.site} onChange={set("site")} tabIndex={-1} autoComplete="off" aria-hidden="true" className="hidden"/>
+          <div><label className="flex gap-3 items-start text-sm text-white/75 cursor-pointer"><input id="jf-consent" type="checkbox" checked={f.consent} onChange={set("consent")} onBlur={blur("consent")} style={{width:"1.1rem",height:"1.1rem",marginTop:".15rem",padding:0}}/>
+            <span>I agree to be contacted by SRK Warriors Odisha about my membership. My details are emailed to the organisers only.</span></label>
+            {touched.consent&&errors.consent&&<p role="alert" className="text-red-400 text-xs mt-1">{errors.consent}</p>}</div>
+          <button type="submit" disabled={status==="sending"} className="inline-flex items-center justify-center rounded-full px-6 py-3 font-semibold bg-gold text-ink transition hover:-translate-y-0.5 glow disabled:opacity-60">{status==="sending"?"Sending…":"Join the Warriors ♛"}</button>
+        </form>}
+      </div>
+    </div>
+  </Section>;
+}
+
+/* ---------- contact / community ---------- */
+function Contact(){
+  return <Section id="contact" kicker="Say hello" title="Contact Us" alt>
+    <div className="grid md:grid-cols-2 gap-6">
+      <div className="rounded-2xl bg-card border border-violet/30 p-6 space-y-3">
+        <p>📍 {SITE.location}</p>
+        <p>✉️ {SITE.email?<a className="text-gold" href={"mailto:"+SITE.email}>{SITE.email}</a>:<span className="text-white/50">Email coming soon</span>}</p>
+        <p>📞 <a className="text-gold" href={"tel:"+SITE.phone}>{SITE.phoneDisplay}</a></p>
+        <Social s={SITE}/>
+      </div>
+      <div className="rounded-2xl bg-gradient-to-br from-royal/60 to-card border border-gold/40 p-6">
+        <h3 className="font-head text-2xl">Join our WhatsApp community</h3>
+        <p className="text-white/70 text-sm mt-2 mb-4">Get match-day alerts, event news and chat with fellow Warriors.</p>
+        {SITE.whatsapp?<Btn href={SITE.whatsapp}>Join on WhatsApp</Btn>:<><Btn disabled>WhatsApp link coming soon</Btn><p className="text-xs text-white/40 mt-2">Set SITE.whatsapp to enable.</p></>}
+      </div>
+    </div>
+  </Section>;
+}
+
+function Footer(){
+  return <footer className="border-t border-violet/30 bg-ink px-5 py-12" style={{paddingBottom:"calc(3rem + env(safe-area-inset-bottom,0px))"}}>
+    <div className="max-w-6xl mx-auto grid md:grid-cols-3 gap-8">
+      <div><Logo/><p className="text-white/60 text-sm mt-3">An independent fan community uniting fans across Odisha through Shah Rukh Khan, KKR and cricket.</p><Social s={SITE} className="mt-3"/></div>
+      <div><h4 className="font-head text-gold mb-3">Quick links</h4><ul className="grid grid-cols-2 gap-1 text-sm">{NAV.map(([n,id])=><li key={id}><a href={"#"+id} className="text-white/70 hover:text-gold">{n}</a></li>)}</ul></div>
+      <div><h4 className="font-head text-gold mb-3">Contact</h4><p className="text-sm text-white/70">{SITE.location}</p>{SITE.email&&<p className="text-sm text-white/70">{SITE.email}</p>}<p className="text-sm text-white/70"><a href={"tel:"+SITE.phone} className="hover:text-gold">📞 {SITE.phoneDisplay}</a></p></div>
+    </div>
+    <p className="max-w-6xl mx-auto text-xs text-white/40 mt-10 border-t border-white/10 pt-5">© {new Date().getFullYear()} SRK Warriors Odisha. All rights reserved. Not affiliated with Shah Rukh Khan, Red Chillies Entertainment or Kolkata Knight Riders. All names and marks belong to their respective owners.</p>
+  </footer>;
+}
+
+function App(){
+  return <><Nav/><main><Hero/><KingHub/><About/><Gallery/><Events/><Films/><News/><Join/><Contact/></main><Footer/></>;
+}
+ReactDOM.createRoot(document.getElementById("root")).render(<App/>);
+</script>
+</body>
+</html>
